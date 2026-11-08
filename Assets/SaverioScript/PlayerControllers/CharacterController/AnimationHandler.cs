@@ -1,43 +1,48 @@
+using CharacterController.SaverioScript.PlayerControllers.CharacterController;
 using Script.PlayerControllers;
 using UnityEngine;
 
 namespace CharacterController.Script.PlayerControllers
 {
-	public class AnimationHandler : MonoBehaviour
-	{
-		[Header("References")] [SerializeField]
-		private CharacterSetup characterSetup;
+    public class AnimationHandler : MonoBehaviour, IAptitude
+    {
+        [Header("Setup")]
+        [SerializeField] private float smoothing = 0.2f;
+        [SerializeField] private float runningSmoothing = 0.25f;
+        [SerializeField] private float runBlendValue = 1.5f;
 
-		[SerializeField] private UnityEngine.CharacterController controller;
+        private static readonly int XHash = Animator.StringToHash("X");
+        private static readonly int YHash = Animator.StringToHash("Y");
 
-		[Header("Setup")] [SerializeField] private float smoothing = 0.2f;
-		[SerializeField] private float runningSmoothing = 0.25f;
+        private CharacterSetup setup;
+        private UnityEngine.CharacterController controller;
 
-		[Header("Blend Tree Scale")] [SerializeField]
-		private float runBlendValue = 1.5f;
+        public void Initialize(CharacterSetup characterSetup)
+        {
+            setup = characterSetup;
+            controller = setup.MovementBase.controller;
+        }
 
-		private void Update()
-		{
-			if (characterSetup.MoveState is VaultState)
-				return;
+        private void Update()
+        {
+            if (setup == null || setup.MoveState is VaultState)
+                return;
 
-			UpdateLocomotion();
-			characterSetup.Animator.SetBool("jump", controller.isGrounded);
-		}
+            UpdateLocomotion();
+        }
 
-		private void UpdateLocomotion()
-		{
-			var localVelocity = transform.InverseTransformDirection(characterSetup.MovementBase.CurrentMoveDirection);
-			var maxSpeed = characterSetup.CharacterData.playerRunVelocity;
-			var normalizedVelocity = maxSpeed > 0.01f
-				? Vector3.ClampMagnitude(localVelocity / maxSpeed, 1f) * runBlendValue
-				: Vector3.zero;
+        private void UpdateLocomotion()
+        {
+            var maxSpeed = setup.CharacterData.playerRunVelocity;
+            if (maxSpeed < 0.01f) return;
 
-			var isRunning = characterSetup.ReadInput.IsRunning;
-			var currentSmoothing = isRunning ? runningSmoothing : smoothing;
+            var localVelocity = controller.transform.InverseTransformDirection(
+                setup.MovementBase.CurrentMoveDirection);
+            var normalized = Vector3.ClampMagnitude(localVelocity / maxSpeed, 1f) * runBlendValue;
 
-			characterSetup.Animator.SetFloat("X", normalizedVelocity.x, currentSmoothing, Time.deltaTime);
-			characterSetup.Animator.SetFloat("Y", normalizedVelocity.z, currentSmoothing, Time.deltaTime);
-		}
-	}
+            var damp = setup.ReadInput.IsRunning ? runningSmoothing : smoothing;
+            setup.Animator.SetFloat(XHash, normalized.x, damp, Time.deltaTime);
+            setup.Animator.SetFloat(YHash, normalized.z, damp, Time.deltaTime);
+        }
+    }
 }

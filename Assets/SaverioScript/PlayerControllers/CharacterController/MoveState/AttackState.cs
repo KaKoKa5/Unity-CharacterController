@@ -8,6 +8,7 @@ namespace CharacterController.Script
 	{
 		private readonly AttackComboData attack;
 		private bool bufferedInput;
+		public float MoveSpeed { get; set; }
 
 		public AttackState(AttackComboData attack)
 		{
@@ -18,7 +19,6 @@ namespace CharacterController.Script
 		{
 			bufferedInput = true;
 		}
-
 		public void EnterState(CharacterSetup characterSetup)
 		{
 			characterSetup.ReadInput.IsFighting = true;

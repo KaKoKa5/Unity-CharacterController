@@ -7,10 +7,11 @@ namespace CharacterController.Script
 {
 	public class FightState : IMoveState
 	{
+		public float MoveSpeed { get; set; }
+
 		public void EnterState(CharacterSetup characterSetup)
 		{
 			characterSetup.Animator.SetBool("fight", true);
-			characterSetup.MovementBase.AddOrRemoveSpeed(-0.25f);
 		}
 
 
@@ -21,7 +22,6 @@ namespace CharacterController.Script
 
 		public void ExitState(CharacterSetup characterSetup)
 		{
-			characterSetup.MovementBase.AddOrRemoveSpeed(+0.25f);
 			characterSetup.Animator.SetBool("fight", false);
 		}
 	}

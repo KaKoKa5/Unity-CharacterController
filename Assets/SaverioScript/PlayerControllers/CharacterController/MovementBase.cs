@@ -1,64 +1,42 @@
+using CharacterController.SaverioScript.PlayerControllers.CharacterController;
 using CharacterController.Script.PlayerControllers;
-using Script.PlayerControllers;
 using UnityEngine;
 
 namespace CharacterController.Script
 {
-	public class MovementBase : MonoBehaviour
+	public class MovementBase : MonoBehaviour,IAptitude
 	{
-		[Header("Component")] [SerializeField] private CharacterSetup characterSetup;
-
 		[SerializeField] public UnityEngine.CharacterController controller;
-
-		private float targetSpeed;
-		private Vector3 verticalForce;
 		private float verticalVelocity;
-		private float walkSpeed;
+		private float currentwalkSpeed;
+		[field:SerializeField] public Vector3 CurrentMoveDirection { get; private set; }
+		[field:SerializeField] public bool Grounded { get; private set; }
+		
 
-		public Vector3 CurrentMoveDirection { get; private set; }
-
-		private void Start()
+		public void HandleRotation(float rotationSpeed,Camera cam)
 		{
-			walkSpeed = characterSetup.CharacterData.playerVelocity;
+			var camForward = cam.transform.forward;
+			camForward.y = 0f;
+			if (camForward.sqrMagnitude < 0.001f) return;
+
+			var targetRotation = Quaternion.LookRotation(camForward.normalized);
+			controller.transform.rotation = Quaternion.Slerp(controller.transform.rotation, targetRotation,
+				rotationSpeed * Time.deltaTime);
 		}
 
-		private void LateUpdate()
-		{
-			if (characterSetup.MoveState is VaultState)
-				return;
-
-			HandleRotation();
-			Jump();
-			HandleMovement(characterSetup.ReadInput.IsRunning);
-
-			if (CurrentMoveDirection.magnitude > characterSetup.CharacterData.vaultAutoSpeedThreshold)
-				Vaulting.TryVault(characterSetup, CurrentMoveDirection.magnitude);
-		}
-
-		private void HandleRotation()
-		{
-			var direction = characterSetup.ReadInput.Direction;
-			var inputDir = new Vector3(direction.x, 0, direction.y);
-
-			if (inputDir.magnitude < 0.1f)
-				return;
-
-			var dataCharacter = characterSetup.CharacterData;
-			var targetRotation = Quaternion.LookRotation(inputDir);
-			controller.transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation,
-				dataCharacter.rotationSpeed * Time.deltaTime);
-		}
-
-		private void HandleMovement(bool isRunning)
+		public void HandleMovement( CharacterSetup characterSetup,Camera cam)
 		{
 			var dataCharacter = characterSetup.CharacterData;
 			var direction = characterSetup.ReadInput.Direction;
+	
+			currentwalkSpeed = characterSetup.MoveState.MoveSpeed;
 
-			var maxSpeed = isRunning ? dataCharacter.playerRunVelocity : walkSpeed;
-			targetSpeed = maxSpeed;
+			var camForward = cam.transform.forward; camForward.y = 0f; camForward.Normalize();
+			var camRight   = cam.transform.right;   camRight.y   = 0f; camRight.Normalize();
 
-			var characterDirection = new Vector3(direction.x, 0, direction.y).normalized * targetSpeed;
-
+			var moveDir = (camForward * direction.y + camRight * direction.x).normalized;
+			var characterDirection = moveDir * currentwalkSpeed;
+			
 			if (direction.magnitude > 0.1f)
 				CurrentMoveDirection = Vector3.MoveTowards(CurrentMoveDirection,
 					characterDirection,
@@ -68,21 +46,10 @@ namespace CharacterController.Script
 					Vector3.zero,
 					dataCharacter.playerDeceleration * Time.deltaTime);
 
-			/*Vector3 horizontal = new Vector3(moveDirection.x, 0, moveDirection.z);
-			horizontal = Vector3.ClampMagnitude(horizontal, maxSpeed);
-			moveDirection = new Vector3(horizontal.x, moveDirection.y, horizontal.z);*/
-
-			if (controller.isGrounded && verticalForce.y < 0)
-				verticalForce.y = -2f;
-			else
-				verticalForce.y += Physics.gravity.y * Time.deltaTime;
-
-			var finalMove = CurrentMoveDirection + verticalForce;
-
+			var finalMove = CurrentMoveDirection + Vector3.up * verticalVelocity;
 			controller.Move(finalMove * Time.deltaTime);
 		}
-
-		private void Jump()
+		public void Jump(CharacterSetup characterSetup)
 		{
 			var isJumping = characterSetup.ReadInput.isJumping;
 
@@ -97,7 +64,6 @@ namespace CharacterController.Script
 
 			var jumpForce = characterSetup.CharacterData.jumpForce;
 			var gravity = characterSetup.CharacterData.gravity;
-
 			if (controller.isGrounded && verticalVelocity < 0f)
 				verticalVelocity = -2f;
 
@@ -108,12 +74,10 @@ namespace CharacterController.Script
 			}
 
 			verticalVelocity += gravity * Time.deltaTime;
-			controller.Move(Vector3.up * verticalVelocity * Time.deltaTime);
 		}
-
-		public void AddOrRemoveSpeed(float speed)
+		public void Initialize(CharacterSetup setup)
 		{
-			walkSpeed += speed;
+			currentwalkSpeed = setup.CharacterData.playerVelocity;
 		}
 	}
 }

@@ -15,8 +15,8 @@ MonoBehaviour:
   animStateName: HangUpMedium
   speedMin: 0
   forwardCheckDistance: 0.1
-  maxObstacleHeight: 1
-  minObstacleHeight: 0.6
+  maxObstacleHeight: 1.54
+  minObstacleHeight: 0.9
   matchBodyPart: 5
   matchPosWeight: {x: 0, y: 0, z: 0}
   matchStartTime: 0.1

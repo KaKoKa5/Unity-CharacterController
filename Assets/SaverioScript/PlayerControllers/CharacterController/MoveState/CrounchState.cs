@@ -6,11 +6,12 @@ namespace CharacterController.Script.PlayerControllers
 {
 	public class CrounchState : IMoveState
 	{
+		public float MoveSpeed { get; set; }
+
 		public void EnterState(CharacterSetup characterSetup)
 		{
 			characterSetup.Animator.SetBool("crounch", true);
-			characterSetup.MovementBase.AddOrRemoveSpeed(-0.75f);
-			Debug.Log("crounch");
+			MoveSpeed = characterSetup.CharacterData.crounchSpeed;
 		}
 
 		public void UpdateState(CharacterSetup characterSetup)
@@ -21,14 +22,13 @@ namespace CharacterController.Script.PlayerControllers
 			characterController.height = Mathf.Lerp(characterController.height, data.cruchHeight, 0.3f);
 			characterController.center =
 				Vector3.Lerp(characterController.center, new Vector3(0, data.cruchCenter, 0), 0.3f);
-
-			var wantsToExit = !characterController.isGrounded || !characterSetup.ReadInput.IsCrunching;
+			var wantsToExit =  !characterSetup.Grounded || !characterSetup.ReadInput.IsCrunching;
 			var checkDistance = data.standHeight - characterController.height;
 			var origin = characterSetup.transform.position + Vector3.up * characterController.height;
 
 			var hasCeiling = RaycastChecker.Check(origin, Vector3.up, checkDistance, GameLayers.Wall, out var hit,
 				new Color(0, 1, 0));
-
+			
 			if (hasCeiling)
 			{
 				characterSetup.ReadInput.IsRunning = false;
@@ -44,7 +44,6 @@ namespace CharacterController.Script.PlayerControllers
 
 		public void ExitState(CharacterSetup characterSetup)
 		{
-			characterSetup.MovementBase.AddOrRemoveSpeed(+0.75f);
 			characterSetup.Animator.SetBool("crounch", false);
 		}
 	}

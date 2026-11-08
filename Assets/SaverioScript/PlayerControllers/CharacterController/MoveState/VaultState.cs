@@ -8,6 +8,7 @@ namespace CharacterController.Script
 	{
 		private readonly VaultAnimData animData;
 		private readonly Vector3 handTarget;
+		public float MoveSpeed { get; set; }
 
 		public VaultState(Vector3 handTarget, VaultAnimData animData)
 		{

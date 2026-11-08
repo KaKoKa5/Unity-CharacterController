@@ -1,62 +1,99 @@
 using System;
+using System.Collections.Generic;
+using CharacterController.SaverioScript.PlayerControllers.CharacterController;
+using CharacterController.Script.PlayerControllers;
+using CharacterController.Script.PlayerControllers.Utilities;
 using UnityEngine;
 
 namespace CharacterController.Script
 {
-	public class CharacterSetup : MonoBehaviour
-	{ 
-		public Transform Transform => transform;
-		public float speed => MovementBase.controller.velocity.magnitude;
-	[field: SerializeField] public CharacterData CharacterData { get; private set; }
+    public class CharacterSetup : MonoBehaviour
+    {
+        [field: SerializeField] public CharacterData CharacterData { get; private set; }
+        [field: SerializeField] public ReadInput ReadInput { get; private set; }
+        [field: SerializeField] public MovementBase MovementBase { get; private set; }
+        [field: SerializeField] public Animator Animator { get; private set; }
+        [field: SerializeField] public bool Grounded { get; private set; }
+        [SerializeField] private Camera cam;
 
-	[field: SerializeField] public ReadInput ReadInput { get; private set; }
+        public IMoveState MoveState { get; private set; }
+        public event Action<IMoveState> OnStateChanged;
 
-	[field: SerializeField] public MovementBase MovementBase { get; private set; }
+        private readonly List<IAptitude> aptitudes = new();
+        public IReadOnlyList<IAptitude> Aptitudes => aptitudes;
 
-	[field: SerializeField] public Animator Animator { get; private set; }
+        private void Reset()
+        {
+            ReadInput = GetComponentInChildren<ReadInput>();
+            MovementBase = GetComponentInChildren<MovementBase>();
+            Animator = GetComponentInChildren<Animator>();
+            cam = Camera.main;
+        }
 
-	public IMoveState MoveState { get; private set; }
-	public event Action<IMoveState> OnStateChanged;
+        private void Awake()
+        {
+            if (cam == null) cam = Camera.main;
+            GetComponentsInChildren(true, aptitudes);
+            foreach (var aptitude in aptitudes)
+                aptitude.Initialize(this);
+        }
 
+        private void Start()
+        {
+            GoTo(new NormalWalk());
+        }
 
-	private void Start()
-	{
-		GoTo(new NormalWalk());
-	}
+        private void OnEnable()
+        {
+            ReadInput.OnAttackPressed += HandleAttackPressed;
+        }
 
-	private void Update()
-	{
-		MoveState.UpdateState(this);
-	}
+        private void OnDisable()
+        {
+            ReadInput.OnAttackPressed -= HandleAttackPressed;
+        }
 
-	private void OnEnable()
-	{
-		this.ReadInput.OnAttackPressed += HandleAttackPressed;
-	}
+        private void Update()
+        {
+            var cc = MovementBase.controller;
+            var origin = cc.transform.position + Vector3.up * 0.1f; 
+            var rayHit = RaycastChecker.Check(origin, Vector3.down, 0.4f, GameLayers.Ground,
+                out _, new Color(0, 1, 0));
+            Grounded = cc.isGrounded || rayHit;  
+            
+            MoveState.UpdateState(this);
+            if (MoveState is VaultState) return;
 
-	private void OnDisable()
-	{
-		this.ReadInput.OnAttackPressed -= HandleAttackPressed;
-		Debug.Log("OnDisable");
-	}
+            MovementBase.HandleRotation(CharacterData.rotationSpeed, cam);
+            MovementBase.Jump(this);
+            if (MoveState is VaultState) return;
 
-	private void HandleAttackPressed()
-	{
-		if (this.MovementBase.controller.isGrounded)
-		{
-			this.GoTo(new AttackState(this.CharacterData.firstAttack));
-		}
-	}
+            MovementBase.HandleMovement(this, cam);
 
-	public void GoTo(IMoveState state)
-	{
-		MoveState?.ExitState(this);
+            if (MovementBase.CurrentMoveDirection.magnitude > CharacterData.vaultAutoSpeedThreshold)
+                Vaulting.TryVault(this, MovementBase.CurrentMoveDirection.magnitude);
+        }
 
-		MoveState = state;
+        public T GetAptitude<T>() where T : class, IAptitude
+        {
+            foreach (var aptitude in aptitudes)
+                if (aptitude is T found)
+                    return found;
+            return null;
+        }
 
-		MoveState?.EnterState(this);
+        private void HandleAttackPressed()
+        {
+            if (MovementBase.controller.isGrounded)
+                GoTo(new AttackState(CharacterData.firstAttack));
+        }
 
-		OnStateChanged?.Invoke(state);
-	}
-	}
+        public void GoTo(IMoveState state)
+        {
+            MoveState?.ExitState(this);
+            MoveState = state;
+            MoveState?.EnterState(this);
+            OnStateChanged?.Invoke(state);
+        }
+    }
 }

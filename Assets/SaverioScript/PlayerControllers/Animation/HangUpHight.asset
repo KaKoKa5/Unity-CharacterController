@@ -16,7 +16,7 @@ MonoBehaviour:
   speedMin: 0
   forwardCheckDistance: 0.35
   maxObstacleHeight: 3
-  minObstacleHeight: 1.2
+  minObstacleHeight: 1.76
   matchBodyPart: 2
   matchPosWeight: {x: 1, y: 0, z: 1}
   matchStartTime: 0.1

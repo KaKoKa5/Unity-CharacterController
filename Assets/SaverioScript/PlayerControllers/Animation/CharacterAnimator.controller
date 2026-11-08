@@ -434,7 +434,7 @@ AnimatorController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: HumanBasicMotionsScene
+  m_Name: CharacterAnimator
   serializedVersion: 6
   m_AnimatorParameters:
   - m_Name: X
@@ -859,7 +859,7 @@ BlendTree:
   - serializedVersion: 2
     m_Motion: {fileID: -203655887218126122, guid: 46f68bcdcd9fdd24db704a007ef62e8e, type: 3}
     m_Threshold: 4.977316
-    m_Position: {x: 1.5, y: 0}
+    m_Position: {x: -1.5, y: 0}
     m_TimeScale: 1
     m_CycleOffset: 0.5
     m_DirectBlendParameter: Blend
@@ -867,7 +867,7 @@ BlendTree:
   - serializedVersion: 2
     m_Motion: {fileID: -203655887218126122, guid: 4818a9cf55e88c44eb7f6f35c2acc2b5, type: 3}
     m_Threshold: 5.971645
-    m_Position: {x: 0.75, y: 0}
+    m_Position: {x: -0.75, y: 0}
     m_TimeScale: 1
     m_CycleOffset: 0.5
     m_DirectBlendParameter: Blend
@@ -875,7 +875,7 @@ BlendTree:
   - serializedVersion: 2
     m_Motion: {fileID: -203655887218126122, guid: ff5a750ecc6e6724b9969d0e00280f13, type: 3}
     m_Threshold: 6.965974
-    m_Position: {x: -1.5, y: 0}
+    m_Position: {x: 1.5, y: 0}
     m_TimeScale: 1
     m_CycleOffset: 0.5
     m_DirectBlendParameter: Blend
@@ -883,7 +883,7 @@ BlendTree:
   - serializedVersion: 2
     m_Motion: {fileID: -203655887218126122, guid: 2f781c39c70d5f84d9bbb298e6a5d321, type: 3}
     m_Threshold: 7.960303
-    m_Position: {x: -0.75, y: 0}
+    m_Position: {x: 0.75, y: 0}
     m_TimeScale: 1
     m_CycleOffset: 0.5
     m_DirectBlendParameter: Blend

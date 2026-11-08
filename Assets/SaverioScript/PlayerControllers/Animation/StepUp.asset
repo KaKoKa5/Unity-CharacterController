@@ -15,7 +15,7 @@ MonoBehaviour:
   animStateName: StepUp
   speedMin: 0
   forwardCheckDistance: 0.2
-  maxObstacleHeight: 0.55
+  maxObstacleHeight: 0.65
   minObstacleHeight: 0.1
   matchBodyPart: 3
   matchPosWeight: {x: 0, y: 0, z: 0}

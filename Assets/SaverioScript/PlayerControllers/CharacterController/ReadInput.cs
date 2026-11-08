@@ -1,10 +1,11 @@
 using System;
+using CharacterController.SaverioScript.PlayerControllers.CharacterController;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace CharacterController.Script
 {
-	public class ReadInput : MonoBehaviour
+	public class ReadInput : MonoBehaviour, IAptitude
 	{
 		[SerializeField] private PlayerInput playerInput;
 
@@ -55,6 +56,11 @@ namespace CharacterController.Script
 		{
 			if (context.performed)
 				OnAttackPressed?.Invoke();
+		}
+
+		public void Initialize(CharacterSetup setup)
+		{
+			
 		}
 	}
 }

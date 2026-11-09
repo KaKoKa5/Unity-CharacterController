@@ -1,24 +1,29 @@
-using System;
 using UnityEngine;
 
-public class HealthComponent : MonoBehaviour
+namespace HealthSysteme.SaverioScript.HealthSysteme.Core
 {
-	[SerializeField] private HealthData healthData;
-	[field: SerializeField] public float CurrentHealth { get; private set; }
-	private float MaxHealth => healthData.maxHealth;
+	public class HealthComponent : MonoBehaviour
+	{
+		[SerializeField] private HealthData healthData;
+		[field: SerializeField] public float CurrentHealth { get; private set; }
+		private float MaxHealth => healthData.maxHealth;
 
-	private void Start()
-	{
-		CurrentHealth = healthData.maxHealth;
-	}
-	
-	public void AddOrRemoveHealth(float amount)
-	{
-		CurrentHealth += amount;
-		
-		if (CurrentHealth > healthData.maxHealth)
+		private void Start()
+		{
 			CurrentHealth = healthData.maxHealth;
+		}
+	
+		public void AddOrRemoveHealth(float amount)
+		{
+			CurrentHealth += amount;
 		
-		CurrentHealth = Mathf.Clamp(CurrentHealth, 0, healthData.maxHealth);
+			if (CurrentHealth > healthData.maxHealth)
+				CurrentHealth = healthData.maxHealth;
+		
+			if (CurrentHealth <= 0)
+				CurrentHealth = 100;
+		
+			CurrentHealth = Mathf.Clamp(CurrentHealth, 0, healthData.maxHealth);
+		}
 	}
 }

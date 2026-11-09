@@ -1,5 +1,6 @@
 using System;
 using System.Windows.Input;
+using HealthSysteme.SaverioScript.HealthSysteme.Core;
 
 namespace CharacterController.Script
 {

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using CharacterController.SaverioScript.PlayerControllers.CharacterController;
+using CharacterController.SaverioScript.PlayerControllers.CharacterController.MoveState;
 using CharacterController.Script.PlayerControllers;
 using CharacterController.Script.PlayerControllers.Utilities;
 using UnityEngine;
@@ -24,8 +25,6 @@ namespace CharacterController.Script
 
         private void Reset()
         {
-            ReadInput = GetComponentInChildren<ReadInput>();
-            MovementBase = GetComponentInChildren<MovementBase>();
             Animator = GetComponentInChildren<Animator>();
             cam = Camera.main;
         }
@@ -59,7 +58,15 @@ namespace CharacterController.Script
             var origin = cc.transform.position + Vector3.up * 0.1f; 
             var rayHit = RaycastChecker.Check(origin, Vector3.down, 0.4f, GameLayers.Ground,
                 out _, new Color(0, 1, 0));
-            Grounded = cc.isGrounded || rayHit;  
+            Grounded = cc.isGrounded || rayHit;
+            
+            var climb = RaycastChecker.Check(origin, transform.forward, 1f, GameLayers.Climb,
+                out var hit, new Color(1, 0, 0));
+            
+            if (ReadInput.isJumping && climb)
+            {
+                GoTo(new ClimbState());
+            }
             
             MoveState.UpdateState(this);
             if (MoveState is VaultState) return;

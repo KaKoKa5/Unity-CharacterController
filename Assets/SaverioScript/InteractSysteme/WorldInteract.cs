@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using CharacterController.SaverioScript.PlayerControllers.CharacterController;
 using CharacterController.Script;
 using Script.PlayerControllers;
 using UnityEngine;
@@ -11,7 +12,6 @@ namespace InteractSysteme.Script
 		[SerializeField] private CharacterSetup characterSetup;
 
 		private readonly HashSet<IInteractable> insideTrigger = new();
-
 		private readonly HashSet<IInteractable> interactablesInRange = new();
 
 		private void FixedUpdate()

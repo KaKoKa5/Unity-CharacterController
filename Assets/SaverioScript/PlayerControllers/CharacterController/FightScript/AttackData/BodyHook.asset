@@ -16,5 +16,5 @@ MonoBehaviour:
   comboWindowStart: 0
   comboWindowEnd: 0.8
   exitCrossFadeDuration: 0.15
-  nextAttack: {fileID: 11400000, guid: d3067a057d03bf0439ddd35864b9a92f, type: 2}
+  nextAttack: {fileID: 11400000, guid: 9a0e0895e029089428cb17dfeef47d26, type: 2}
   hitBox: {fileID: 0}

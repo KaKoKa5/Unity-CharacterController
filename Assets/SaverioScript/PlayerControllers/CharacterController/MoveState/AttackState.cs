@@ -1,4 +1,5 @@
 using System.Collections;
+using CharacterController.SaverioScript.PlayerControllers.CharacterController.MoveState;
 using Script.PlayerControllers;
 using UnityEngine;
 
@@ -26,7 +27,7 @@ namespace CharacterController.Script
 			characterSetup.Animator.CrossFadeInFixedTime(attack.animStateName, 0.1f);
 			characterSetup.ReadInput.OnAttackPressed += OnAttackPressed;
 			characterSetup.StartCoroutine(RunAttack(characterSetup));
-			Debug.Log("attack");
+			
 		}
 
 		public void UpdateState(CharacterSetup characterSetup)

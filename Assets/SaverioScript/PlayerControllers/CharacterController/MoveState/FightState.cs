@@ -1,9 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
-using Script.PlayerControllers;
-using UnityEngine;
+using CharacterController.Script;
 
-namespace CharacterController.Script
+namespace CharacterController.SaverioScript.PlayerControllers.CharacterController.MoveState
 {
 	public class FightState : IMoveState
 	{

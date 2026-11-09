@@ -16,8 +16,9 @@ MonoBehaviour:
   playerRunVelocity: 5
   playerAcceleration: 20
   playerDeceleration: 30
-  rotationSpeed: 10
-  jumpForce: 9
+  crounchSpeed: 0.75
+  rotationSpeed: 5
+  jumpForce: 4
   standHeight: 1.8
   standCenter: 0.9
   cruchCenter: 0.45

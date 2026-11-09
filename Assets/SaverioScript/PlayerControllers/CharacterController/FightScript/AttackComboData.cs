@@ -15,6 +15,5 @@ namespace CharacterController.Script
 		[Header("Transition Retour")] public float exitCrossFadeDuration = 0.15f;
 
 		[Header("Chaîne")] public AttackComboData nextAttack;
-		[Header("HitBox")] public HitBoxData hitBox;
 	}
 }

@@ -16,7 +16,8 @@ namespace CharacterController.Script
 		public float jumpForce;
 		public float standHeight = 1.8f;
 		public float standCenter = 0.9f;
-
+		public float climbSpeed = 1.2f;
+		
 		[Header("Physics")] public float cruchCenter = 0.45f;
 
 		public float cruchHeight = 0.9f;
@@ -29,6 +30,7 @@ namespace CharacterController.Script
 
 		[Header("Gravity")] public float gravity = -9.81f;
 		[Header("ComboAttack")] public AttackComboData firstAttack;
+		public float wallCheckDistance;
 		
 	}
 }

@@ -1,5 +1,6 @@
 using CharacterController.SaverioScript.PlayerControllers.CharacterController;
 using CharacterController.Script.PlayerControllers;
+using CharacterController.Script.PlayerControllers.Utilities;
 using UnityEngine;
 
 namespace CharacterController.Script
@@ -11,6 +12,9 @@ namespace CharacterController.Script
 		private float currentwalkSpeed;
 		[field:SerializeField] public Vector3 CurrentMoveDirection { get; private set; }
 		[field:SerializeField] public bool Grounded { get; private set; }
+		
+		private static readonly int XHash = Animator.StringToHash("X");
+		private static readonly int YHash = Animator.StringToHash("Y");
 		
 
 		public void HandleRotation(float rotationSpeed,Camera cam)
@@ -74,6 +78,40 @@ namespace CharacterController.Script
 			}
 
 			verticalVelocity += gravity * Time.deltaTime;
+		}
+
+		public void Climb(CharacterSetup characterSetup, float speed,RaycastHit hit)
+		{
+			var data = characterSetup.CharacterData;
+			var input = characterSetup.ReadInput.Direction;
+			var t = controller.transform;
+
+			var origin = t.position + Vector3.up * (controller.height * 0.6f);
+			if (!RaycastChecker.Check(origin, t.forward, 0.5f, GameLayers.Climb, out hit, new Color(1, 0, 0)))
+				return;
+
+			var wallNormal = hit.normal;
+
+			var flat = new Vector3(-wallNormal.x, 0f, -wallNormal.z);
+			if (flat.sqrMagnitude > 0.001f)
+				t.rotation = Quaternion.Slerp(t.rotation, Quaternion.LookRotation(flat.normalized),
+					data.rotationSpeed * Time.deltaTime);
+
+			var right = Vector3.Cross(Vector3.up, -wallNormal);
+			var move = (right * input.x + Vector3.up * input.y) * speed;
+
+			var wantedDistance = controller.radius + 0.05f;
+			move += -wallNormal * ((hit.distance - wantedDistance) * 10f);
+
+			controller.Move(move * Time.deltaTime);
+
+			characterSetup.Animator.SetFloat(XHash, input.x, 0.1f, Time.deltaTime);
+			characterSetup.Animator.SetFloat(YHash, input.y, 0.1f, Time.deltaTime);
+		}
+		public void ResetMotion()
+		{
+			CurrentMoveDirection = Vector3.zero;
+			verticalVelocity = 0f;
 		}
 		public void Initialize(CharacterSetup setup)
 		{

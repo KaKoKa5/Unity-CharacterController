@@ -34,7 +34,7 @@ namespace CharacterController.Script.PlayerControllers
 
 			var pos = characterSetup.transform;
 			var data = characterSetup.CharacterData;
-			var origin = pos.position + Vector3.zero * data.vaultOrigin;
+			var origin = pos.position +  Vector3.up * 0.6f * data.vaultOrigin;
 
 			if (!RaycastChecker.Check(origin, pos.forward, forwardDistance, GameLayers.Vaultable, out var forwardHit,
 				    new Color(0, 1, 0)))
